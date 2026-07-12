@@ -1,0 +1,187 @@
+/* === FONTS === */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap');
+
+/* === COLORS === */
+:root {
+  --cream: #F5F0E8;
+  --forest: #2D5016;
+  --moss: #4A7C3F;
+  --navy: #1B2A4A;
+  --sky: #7BB8D4;
+  --tan: #C4A882;
+  --text-dark: #1C1C1C;
+  --text-muted: #6B6560;
+}
+
+/* === RESET === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* === BASE === */
+body {
+  background-color: var(--cream);
+  color: var(--text-dark);
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* === NAVIGATION === */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 4rem;
+  border-bottom: 1px solid var(--tan);
+}
+
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: var(--forest);
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2.5rem;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+}
+
+nav ul li a:hover {
+  color: var(--forest);
+}
+/* === HERO === */
+#hero {
+  padding: 6rem 4rem;
+  max-width: 900px;
+}
+
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--moss);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 4rem;
+  color: var(--navy);
+  line-height: 1.15;
+  margin-bottom: 1.5rem;
+}
+
+.sub {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 560px;
+  line-height: 1.8;
+}
+
+/* === DATA BAR === */
+.data-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--tan);
+}
+
+.data-point {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--navy);
+  background: transparent;
+  border: 1px solid var(--tan);
+  padding: 0.4rem 1rem;
+  border-radius: 2px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* === ABOUT === */
+#about {
+  padding: 6rem 4rem;
+  border-top: 1px solid var(--tan);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 4rem;
+  max-width: 900px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--cream);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.credentials {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.credential-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.credential-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--moss);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.credential-value {
+  font-size: 0.9rem;
+  color: var(--text-dark);
+}
+
+.section-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--moss);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 1.5rem;
+}
+
+.about-text {
+  font-size: 1rem;
+  color: var(--text-muted);
+  line-height: 1.9;
+  margin-bottom: 1.25rem;
+  max-width: 540px;
+}

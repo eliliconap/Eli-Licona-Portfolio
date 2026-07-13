@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Readmissions Disparity Audit</title>
+    <style>
+        :root {
+            --cream: #F5F0E8;
+            --forest: #2D5016;
+            --moss: #45643d;
+            --navy: #1B2A4A;
+            --sky: #86c590;
+            --tan: #e6d2b6;
+            --text-dark: #1C1C1C;
+            --text-muted: #534e4a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--cream);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            border-bottom: 2px solid var(--tan);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 0 0 10px 0;
+            color: var(--navy);
+        }
+
+        .subtitle {
+            color: var(--forest);
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        h2 {
+            color: var(--navy);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        /* Abstract Section: Beautiful, high-contrast, light card styling */
+        .abstract-section {
+            background-color: #ffffff;
+            border-left: 5px solid var(--forest);
+            border-right: 1px solid var(--tan);
+            border-top: 1px solid var(--tan);
+            border-bottom: 1px solid var(--tan);
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(27, 42, 74, 0.05);
+        }
+
+        .abstract-section h2 {
+            margin-top: 0;
+            color: var(--forest);
+        }
+
+        .abstract-section p {
+            color: var(--text-dark);
+        }
+
+        /* Power BI Dashboard Container */
+        .dashboard-section {
+            margin-bottom: 50px;
+        }
+
+        .dashboard-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 2px solid var(--tan);
+            background: #ffffff;
+            box-shadow: 0 8px 24px rgba(27, 42, 74, 0.08);
+        }
+
+        .dashboard-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Policy Breakdown Grid */
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .policy-card {
+            background-color: #ffffff;
+            border: 1px solid var(--tan);
+            border-top: 4px solid var(--moss);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(27, 42, 74, 0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .policy-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--sky);
+            box-shadow: 0 8px 20px rgba(27, 42, 74, 0.1);
+        }
+
+        .policy-card h3 {
+            margin-top: 0;
+            color: var(--navy);
+            font-size: 1.3rem;
+        }
+
+        .badge {
+            background: var(--sky);
+            color: var(--navy);
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .policy-text {
+            color: var(--text-dark);
+        }
+
+        .policy-text em {
+            color: var(--text-muted);
+            font-style: normal;
+            display: block;
+            margin-top: 15px;
+            border-top: 1px dashed var(--tan);
+            padding-top: 12px;
+        }
+        
+        .section-desc {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <p class="subtitle">D.S Portfolio Case Study</p>
+            <h1>Who Gets to go Home?
+</h1>
+        </header>
+
+<!-- 1. EXECUTIVE ABSTRACT -->
+<section class="abstract-section">
+    <h2>The Story Behind the Project</h2>
+    <p>
+        <strong>Why I Built This:</strong> This project started because of something personal. During the peak of COVID-19, I watched how messy and broken the healthcare system became for families who lacked resources, including my own grandmother. When patients were sent home from the hospital, there was barely any support. This left families to figure out complicated medical care completely on their own, and I wanted to see if the data backed up what we went through.
+    </p>
+    <p>
+        <strong>The Missing Data Problem:</strong> I started digging into Charlotte-Mecklenburg hospital readmission data to track these care gaps, but I immediately hit a major roadblock. It turns out that the federal government, through CMS, skipped tracking readmission numbers for the first half of 2020. They did this so hospitals wouldn't get hit with massive financial penalties while dealing with the chaos of the pandemic. While that protected the hospitals financially, it completely erased the data needed to track how vulnerable families were being left behind.
+    </p>
+    <p>
+        <strong>The road to understanding:</strong> Real patient data is locked down tight under HIPAA laws, and with the 2020 data erased, I had to get creative. Instead of quitting, I decided to build the data myself. I engineered a realistic dataset simulating 6,845 individual patient journeys. To make sure the numbers actually made sense in the real world, I anchored my simulated patients directly to real baselines: the "FY 2026 CMS Hospital Performance Metrics" and the local "DHHS Public Health Dataset".
+    </p>
+    <p>
+        <strong>The Goal:</strong> Going this route didn't just let me bypass privacy laws, it allowed me to build a much stronger project. This dataset gave me a perfect sandbox to clean up messy data, look for hidden patterns, and build an interactive dashboard that clearly shows where the system breaks down so we can find ways to fix it.
+    </p>
+</section>
+
+        <!-- 2. POWER BI EMBED SECTION -->
+        <section class="dashboard-section">
+            <h2>Interactive Analytics Dashboard</h2>
+            <div class="dashboard-wrapper">
+                <!-- PASTE YOUR POWER BI EMBED CODE HERE -->
+                <iframe title="Charlotte Healthcare Disparities Analysis" src="https://app.powerbi.com/view?r=YOUR_WORKSPACE_EMBED_STRING_GOES_HERE" allowFullScreen="true"></iframe>
+            </div>
+        </section>
+
+        <!-- 3. SIMPLE INDUSTRY BREAKDOWN & POLICIES -->
+        <section class="breakdown-section">
+            <h2>Operational Impact & Policy Recommendations</h2>
+            <p class="section-desc">A translation of data-driven findings into strategic hospital interventions designed to reduce CMS readmission penalty exposures.</p>
+            
+            <div class="breakdown-grid">
+                <!-- Policy Card 1 -->
+                <div class="policy-card">
+                    <span class="badge">Finding 1: Operational Discharge Drift</span>
+                    <h3>Equity-Conditioned Discharge</h3>
+                    <p class="policy-text">
+                        Patients living in under-resourced zip codes show lower average lengths of stay than the 3.04-day standard system baseline, resulting in premature discharge before clinical stability is fully reached.
+                        <em><strong>Policy Implementation:</strong> Mandate standardized clinical stabilization windows for high-risk chronic conditions (e.g., heart failure) that explicitly adjust based on the patient's available home care infrastructure.</em>
+                    </p>
+                </div>
+
+                <!-- Policy Card 2 -->
+                <div class="policy-card">
+                    <span class="badge">Finding 2: Care Loop Deficits</span>
+                    <h3>Warm Hand-off Navigators</h3>
+                    <p class="policy-text">
+                        Minority cohorts display a sharp 58% breakdown rate in completing critical 30-day post-discharge clinical follow-ups.
+                        <em><strong>Policy Implementation:</strong> Deploy hospital-funded bilingual Patient Navigators tasked with legally scheduling and securing transportation for a primary care check-in within 7 days of discharge.</em>
+                    </p>
+                </div>
+
+                <!-- Policy Card 3 -->
+                <div class="policy-card">
+                    <span class="badge">Finding 3: Regional Pharmacy Deserts</span>
+                    <h3>Transitional Courier Care</h3>
+                    <p class="policy-text">
+                        Readmission spikes mathematically cluster within Charlotte's historic "Crescent" corridor, driven by systemic pharmaceutical deserts and lack of immediate access to medication.
+                        <em><strong>Policy Implementation:</strong> Establish partnerships supplying 30 days of free, hospital-couriered prescription delivery directly to high-risk residential zip codes.</em>
+                    </p>
+                </div>
+            
+            </div>
+
+        </section>
+    </div>
+<!-- Way to add space between areas   -->
+<div style="height: 30px;"></div>
+
+<!-- DATASET LINK BOX -->
+<div style="background-color: #ffffff; border: 1px solid var(--tan); padding: 20px; border-radius: 8px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(27, 42, 74, 0.04);">
+    <div>
+        <h4 style="margin: 0 0 5px 0; color: var(--navy); font-size: 1.1rem;">Source Reference Registry</h4>
+        <p style="margin: 0; color: var(--text-muted); font-size: 0.95rem;">FY 2026 CMS Hospital Readmissions Reduction Program Dataset</p>
+    </div>
+    <div>
+
+    </div>
+    <a href="https://data.cms.gov/provider-data/dataset/9n3s-kdb3" target="_blank" style="background-color: var(--forest); color: var(--cream); padding: 10px 20px; text-decoration: none; font-weight: bold; border-radius: 6px; font-size: 0.9rem; transition: background 0.2s;" onmouseover="this.style.backgroundColor='var(--moss)'" onmouseout="this.style.backgroundColor='var(--forest)'">
+        View CMS Data
+    </a>
+</div>
+</body>
+</html>

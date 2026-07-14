@@ -395,3 +395,10 @@ h1 {
 html {
   scroll-behavior: smooth;
 }
+
+/* === MAP === */
+.map-container {
+  margin: 2rem 0;
+  max-width: 900px;
+}
+

@@ -568,3 +568,11 @@ html {
   }
 
 }
+.project-subtitle {
+  font-size: 0.85rem;
+  color: var(--forest);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1rem;
+}

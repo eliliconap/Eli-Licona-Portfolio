@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panda Bamboo Runner</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #1a1a24;
+      color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    h1 {
+      margin-bottom: 10px;
+      font-size: 2rem;
+      color: #4ade80;
+    }
+    .instructions {
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+      color: #94a3b8;
+    }
+    .instructions span {
+      background: #334155;
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: #f8fafc;
+      font-weight: bold;
+    }
+    #gameContainer {
+      position: relative;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    canvas {
+      background: linear-gradient(to bottom, #7dd3fc 0%, #e0f2fe 70%, #bbf7d0 70%, #86efac 100%);
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Panda Bamboo Runner</h1>
+  <div class="instructions">
+    Press <span>Space</span> or <span>&uparrow;</span> to <strong>JUMP</strong> over bamboo | 
+    Hold <span>&downarrow;</span> to <strong>ROLL</strong> under flying birds
+  </div>
+
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Game Physics & Constants
+    const GROUND_Y = 320;
+    const GRAVITY = 0.6;
+    const JUMP_FORCE = -12;
+    const INITIAL_SPEED = 6;
+
+    let gameSpeed = INITIAL_SPEED;
+    let score = 0;
+    let highScore = 0;
+    let gameOver = false;
+    let frameCount = 0;
+
+    // Key input tracking
+    const keys = {
+      jump: false,
+      roll: false
+    };
+
+    // Panda Color Palettes for Randomizer
+    const PANDA_PALETTES = [
+      { name: 'Classic Black', fur: '#ffffff', dark: '#1e1b18', nose: '#1e1b18' },
+      { name: 'Red Panda',     fur: '#e05638', dark: '#4a2318', nose: '#1e1b18' },
+      { name: 'Cinnamon Brown',fur: '#f5e6d3', dark: '#8c5332', nose: '#3d2010' }
+    ];
+
+    // Background Decorative Clouds
+    let bgClouds = [];
+    class BackgroundCloud {
+      constructor() {
+        this.x = canvas.width + Math.random() * 200;
+        this.y = 30 + Math.random() * 120;
+        this.speed = 1 + Math.random() * 1.5;
+        this.scale = 0.6 + Math.random() * 0.6;
+      }
+      update() {
+        this.x -= this.speed;
+        if (this.x < -100) {
+          this.x = canvas.width + 100;
+          this.y = 30 + Math.random() * 120;
+        }
+      }
+      draw() {
+        ctx.save();
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 20 * this.scale, 0, Math.PI * 2);
+        ctx.arc(this.x + 20 * this.scale, this.y - 10 * this.scale, 25 * this.scale, 0, Math.PI * 2);
+        ctx.arc(this.x + 45 * this.scale, this.y, 20 * this.scale, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+    // Initialize 4 parallax background clouds
+    for (let i = 0; i < 4; i++) {
+      bgClouds.push(new BackgroundCloud());
+    }
+
+    // Dynamic Pixel Panda Facing Right
+    const panda = {
+      x: 80,
+      y: GROUND_Y - 50,
+      normalWidth: 60,
+      normalHeight: 50,
+      rollWidth: 50,
+      rollHeight: 30,
+      width: 60,
+      height: 50,
+      vy: 0,
+      isGrounded: true,
+      isRolling: false,
+      rollAngle: 0,
+      legCycle: 0,
+      palette: PANDA_PALETTES[0],
+
+      reset() {
+        this.y = GROUND_Y - this.normalHeight;
+        this.width = this.normalWidth;
+        this.height = this.normalHeight;
+        this.vy = 0;
+        this.isGrounded = true;
+        this.isRolling = false;
+        this.rollAngle = 0;
+        // Randomize Panda Fur Color on reset!
+        const randIndex = Math.floor(Math.random() * PANDA_PALETTES.length);
+        this.palette = PANDA_PALETTES[randIndex];
+      },
+
+      update() {
+        // Handle Rolling State
+        if (keys.roll && this.isGrounded) {
+          this.isRolling = true;
+          this.width = this.rollWidth;
+          this.height = this.rollHeight;
+          this.y = GROUND_Y - this.rollHeight;
+          this.rollAngle += 0.3; // Spin rapid roll
+        } else {
+          this.isRolling = false;
+          this.width = this.normalWidth;
+          this.height = this.normalHeight;
+          this.rollAngle = 0;
+        }
+
+        // Handle Jumping
+        if (keys.jump && this.isGrounded && !this.isRolling) {
+          this.vy = JUMP_FORCE;
+          this.isGrounded = false;
+        }
+
+        // Apply Gravity
+        this.vy += GRAVITY;
+        this.y += this.vy;
+
+        // Ground Collision Check
+        const currentHeight = this.isRolling ? this.rollHeight : this.normalHeight;
+        if (this.y + currentHeight >= GROUND_Y) {
+          this.y = GROUND_Y - currentHeight;
+          this.vy = 0;
+          this.isGrounded = true;
+        }
+
+        // Leg running animation cycle
+        if (this.isGrounded && !this.isRolling) {
+          this.legCycle += 0.25;
+        }
+      },
+
+      draw() {
+        ctx.save();
+        const p = this.palette;
+        
+        if (this.isRolling) {
+          // --- ROLLING PANDA (Ball rotation) ---
+          ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+          ctx.rotate(this.rollAngle);
+
+          // Body Ball
+          ctx.fillStyle = p.fur;
+          ctx.beginPath();
+          ctx.arc(0, 0, 20, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#000000';
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+
+          // Dark Fur Patches
+          ctx.fillStyle = p.dark;
+          ctx.beginPath();
+          ctx.arc(10, -5, 10, 0, Math.PI * 2); // Head patch
+          ctx.arc(-8, 8, 8, 0, Math.PI * 2);  // Back leg
+          ctx.arc(4, 8, 8, 0, Math.PI * 2);   // Front leg
+          ctx.fill();
+
+          // Eye Dot
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(12, -7, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+
+        } else {
+          // --- RUNNING / JUMPING PANDA ---
+          ctx.translate(this.x, this.y);
+
+          const legOffset = Math.sin(this.legCycle) * 8;
+
+          // 1. BACK LEGS
+          ctx.fillStyle = p.dark;
+          ctx.beginPath();
+          ctx.roundRect(10 - (this.isGrounded ? legOffset : 0), 32, 10, 18, 4);
+          ctx.roundRect(38 + (this.isGrounded ? legOffset : 0), 32, 10, 18, 4);
+          ctx.fill();
+
+          // 2. MAIN BODY
+          ctx.fillStyle = p.fur;
+          ctx.beginPath();
+          ctx.roundRect(5, 12, 42, 30, 12);
+          ctx.fill();
+          ctx.strokeStyle = '#000000';
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+
+          // 3. SADDLE BAND
+          ctx.fillStyle = p.dark;
+          ctx.beginPath();
+          ctx.roundRect(18, 12, 14, 30, 4);
+          ctx.fill();
+
+          // 4. TAIL
+          ctx.fillStyle = p.fur;
+          ctx.beginPath();
+          ctx.arc(4, 25, 4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          // 5. FRONT LEGS
+          ctx.fillStyle = p.dark;
+          ctx.beginPath();
+          ctx.roundRect(14 + (this.isGrounded ? legOffset : 0), 34, 10, 16, 4);
+          ctx.roundRect(42 - (this.isGrounded ? legOffset : 0), 34, 10, 16, 4);
+          ctx.fill();
+
+          // 6. HEAD
+          ctx.fillStyle = p.fur;
+          ctx.beginPath();
+          ctx.arc(44, 20, 16, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          // 7. EARS
+          ctx.fillStyle = p.dark;
+          ctx.beginPath();
+          ctx.arc(38, 7, 5, 0, Math.PI * 2);
+          ctx.arc(50, 8, 5, 0, Math.PI * 2);
+          ctx.fill();
+
+          // 8. EYE PATCH & EYE
+          ctx.fillStyle = p.dark;
+          ctx.beginPath();
+          ctx.ellipse(48, 19, 5, 7, -Math.PI / 8, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(49, 18, 2, 0, Math.PI * 2);
+          ctx.fill();
+
+          // 9. NOSE
+          ctx.fillStyle = p.nose;
+          ctx.beginPath();
+          ctx.arc(58, 22, 3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+    };
+
+    // Obstacle Array
+    let obstacles = [];
+
+    class Obstacle {
+      constructor(type) {
+        this.type = type; // 'short_bamboo', 'tall_bamboo', or 'bird'
+        this.markedForDeletion = false;
+
+        if (type === 'short_bamboo') {
+          this.width = 24;
+          this.height = 40;
+          this.x = canvas.width;
+          this.y = GROUND_Y - this.height;
+        } else if (type === 'tall_bamboo') {
+          this.width = 28;
+          this.height = 75;
+          this.x = canvas.width;
+          this.y = GROUND_Y - this.height;
+        } else if (type === 'bird') {
+          this.width = 45;
+          this.height = 28;
+          this.x = canvas.width;
+          this.y = GROUND_Y - 72; // Low flying height that requires rolling
+          this.wingCycle = 0;
+        }
+      }
+
+      update() {
+        this.x -= gameSpeed;
+        if (this.type === 'bird') {
+          this.wingCycle += 0.2;
+        }
+        if (this.x + this.width < 0) {
+          this.markedForDeletion = true;
+        }
+      }
+
+      draw() {
+        if (this.type === 'short_bamboo' || this.type === 'tall_bamboo') {
+          // Draw Bamboo Log
+          ctx.fillStyle = '#15803d';
+          ctx.fillRect(this.x, this.y, this.width, this.height);
+          ctx.strokeStyle = '#166534';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(this.x, this.y, this.width, this.height);
+
+          // Bamboo Segments
+          ctx.fillStyle = '#4ade80';
+          for (let segY = this.y + 16; segY < this.y + this.height - 8; segY += 18) {
+            ctx.fillRect(this.x, segY, this.width, 4);
+          }
+        } else if (this.type === 'bird') {
+          // Draw Flying Bird
+          ctx.save();
+          ctx.translate(this.x, this.y);
+
+          // Bird Body
+          ctx.fillStyle = '#ef4444';
+          ctx.beginPath();
+          ctx.ellipse(22, 16, 16, 10, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Beak
+          ctx.fillStyle = '#f59e0b';
+          ctx.beginPath();
+          ctx.moveTo(6, 16);
+          ctx.lineTo(-4, 13);
+          ctx.lineTo(-2, 19);
+          ctx.closePath();
+          ctx.fill();
+
+          // Flapping Wings
+          const wingY = Math.sin(this.wingCycle) * 12;
+          ctx.fillStyle = '#dc2626';
+          ctx.beginPath();
+          ctx.moveTo(22, 14);
+          ctx.lineTo(32, 14 + wingY);
+          ctx.lineTo(16, 14 + wingY);
+          ctx.closePath();
+          ctx.fill();
+
+          // Eye
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(10, 13, 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#000000';
+          ctx.beginPath();
+          ctx.arc(9, 13, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.restore();
+        }
+      }
+    }
+
+    // Spawn Obstacles Logic
+    let nextSpawnFrame = 100;
+    function handleObstacles() {
+      if (frameCount >= nextSpawnFrame) {
+        const rand = Math.random();
+        let type = 'short_bamboo';
+        if (rand < 0.4) {
+          type = 'short_bamboo';
+        } else if (rand < 0.7) {
+          type = 'tall_bamboo';
+        } else {
+          type = 'bird';
+        }
+
+        obstacles.push(new Obstacle(type));
+
+        const minGap = Math.max(65, 125 - Math.floor(score / 50));
+        nextSpawnFrame = frameCount + minGap + Math.floor(Math.random() * 60);
+      }
+
+      obstacles.forEach((obstacle) => {
+        obstacle.update();
+        obstacle.draw();
+
+        // Hitbox collision check with inner padding
+        const padding = 6;
+        if (
+          panda.x + padding < obstacle.x + obstacle.width &&
+          panda.x + panda.width - padding > obstacle.x &&
+          panda.y + padding < obstacle.y + obstacle.height &&
+          panda.y + panda.height - padding > obstacle.y
+        ) {
+          gameOver = true;
+        }
+      });
+
+      obstacles = obstacles.filter((obs) => !obs.markedForDeletion);
+    }
+
+    // Keyboard Controls
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.code === 'ArrowUp') {
+        keys.jump = true;
+      }
+      if (e.code === 'ArrowDown') {
+        keys.roll = true;
+      }
+      if (gameOver && (e.code === 'Space' || e.code === 'Enter')) {
+        restartGame();
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'Space' || e.code === 'ArrowUp') {
+        keys.jump = false;
+      }
+      if (e.code === 'ArrowDown') {
+        keys.roll = false;
+      }
+    });
+
+    // Reset Game
+    function restartGame() {
+      obstacles = [];
+      score = 0;
+      gameSpeed = INITIAL_SPEED;
+      frameCount = 0;
+      nextSpawnFrame = 80;
+      gameOver = false;
+      panda.reset();
+      animate();
+    }
+
+    // Initial Panda Palette Selection
+    panda.reset();
+
+    // Main Game Loop
+    function animate() {
+      if (gameOver) {
+        if (score > highScore) highScore = score;
+        
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 36px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 20);
+
+        ctx.font = '20px sans-serif';
+        ctx.fillText(`Final Score: ${score}  |  Panda Variant: ${panda.palette.name}`, canvas.width / 2, canvas.height / 2 + 20);
+        ctx.fillText('Press SPACE to Play Again', canvas.width / 2, canvas.height / 2 + 60);
+        return;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Render Parallax Sky Clouds
+      bgClouds.forEach(cloud => {
+        cloud.update();
+        cloud.draw();
+      });
+
+      frameCount++;
+      if (frameCount % 5 === 0) score++;
+      gameSpeed = INITIAL_SPEED + Math.floor(score / 150) * 0.5;
+
+      // Ground Line
+      ctx.fillStyle = '#15803d';
+      ctx.fillRect(0, GROUND_Y, canvas.width, canvas.height - GROUND_Y);
+
+      panda.update();
+      panda.draw();
+      handleObstacles();
+
+      // Score Display & Current Panda Variant
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 18px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(`SCORE: ${score}`, 20, 35);
+      ctx.fillText(`HIGH : ${highScore}`, 20, 60);
+      ctx.fillText(`TYPE : ${panda.palette.name}`, 20, 85);
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>

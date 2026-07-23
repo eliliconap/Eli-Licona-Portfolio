@@ -576,3 +576,117 @@ html {
   letter-spacing: 0.5px;
   margin-bottom: 1rem;
 }
+
+/* === ADDITIONAL WORK === */
+.additional-work {
+  padding-top: 4rem;
+  border-top: 1px solid var(--tan);
+  margin-top: 2rem;
+}
+
+.additional-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.75rem;
+  color: var(--navy);
+  margin-bottom: 2.5rem;
+  margin-top: 0.5rem;
+}
+
+.additional-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.additional-card {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2.5rem;
+  padding: 2rem 0;
+  border-top: 1px solid var(--tan);
+  align-items: start;
+}
+
+.additional-card-image {
+  width: 300px;
+  height: 200px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--tan);
+  background: #0a0a0a;
+  flex-shrink: 0;
+}
+
+.additional-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.additional-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.additional-card-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--moss);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.additional-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  color: var(--navy);
+  line-height: 1.3;
+}
+
+.additional-card-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
+
+.additional-card-role {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: italic;
+} 
+
+
+.additional-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem 0;
+  border-top: 1px solid var(--tan);
+  max-width: 900px;
+}
+
+.additional-card-image {
+  width: 100%;
+  height: 420px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--tan);
+  background: #0a0a0a;
+}
+
+.additional-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.additional-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}

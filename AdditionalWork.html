@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Additional Work | Eli Licona</title>
+  <link rel="stylesheet" href="styles.css?v=5">
+</head>
+<body>
+
+  <header>
+    <nav>
+      <a href="index.html" class="logo">Eli Licona</a>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul id="nav-menu">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#projects">Projects</a></li>
+        <li><a href="index.html#resume">Resume</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section style="padding: 4rem 4rem 2rem;">
+      <p class="section-eyebrow">Additional Work</p>
+      <h1 style="font-family: 'Playfair Display', serif; font-size: 3rem; color: var(--navy); line-height: 1.15; margin-bottom: 1rem;">More from the lab.</h1>
+      <p style="font-size: 1rem; color: var(--text-muted); max-width: 560px; line-height: 1.8;">Projects, coursework, and collaborative work that shaped how I think as an analyst.</p>
+    </section>
+
+    <section style="padding: 2rem 4rem 6rem;">
+      <div class="additional-grid">
+
+        <!-- CAPSTONE CARD -->
+        <div class="additional-card">
+          <div class="additional-card-image">
+            <img src="path-to-your-image/image2.png" alt="Charlotte Crash Severity Risk Map" />
+          </div>
+          <div class="additional-card-content">
+            <span class="additional-card-tag">Team Capstone · UNC Charlotte</span>
+            <h4 class="additional-card-title">Traffic Crash Severity Prediction — Charlotte, NC</h4>
+            <p class="additional-card-desc">A multi-source predictive analysis examining how road infrastructure, weather conditions, and neighborhood poverty predict fatal and serious crashes across Charlotte-Mecklenburg. Merged 500,000+ crash records with street data, hourly weather, and census socioeconomic indicators. Team built an XGBoost model with an interactive hotspot visualization.</p>
+            <p class="additional-card-role"><strong>My role:</strong> Dataset sourcing, literature research, team coordination, and lead presenter.</p>
+            <div class="additional-card-tools">
+              <span class="skill-pill">XGBoost</span>
+              <span class="skill-pill">Python</span>
+              <span class="skill-pill">Spatial Analysis</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Back to portfolio -->
+    <section style="padding: 0 4rem 6rem;">
+      <a href="index.html" class="project-link-secondary">← Back to Portfolio</a>
+    </section>
+
+  </main>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+    hamburger.addEventListener('click', () => {
+      navMenu.classList.toggle('open');
+    });
+    document.querySelectorAll('#nav-menu a').forEach(link => {
+      link.addEventListener('click', () => {
+        navMenu.classList.remove('open');
+      });
+    });
+  </script>
+
+</body>
+</html>
+
